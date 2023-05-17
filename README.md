@@ -5,7 +5,8 @@ This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next
 Clone the project on your device
 ### Installation
 Install all packages using
- ```npm install 
+ ```
+ npm install 
 # or 
 yarn
 ```
@@ -14,5 +15,7 @@ yarn
 2. Run ``` npx prisma db push ```
 
 ### Run dev server
-``` yarn dev ```
+``` 
+yarn dev 
+```
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
