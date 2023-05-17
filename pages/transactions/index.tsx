@@ -1,4 +1,6 @@
+import CompanyRow from "@/components/CompanyRow";
 import PaginatedTransactions from "@/components/PaginatedTransactions";
+import MarkedCompany from "@/types/MarkedCompany";
 import MarkedTransaction from "@/types/MarkedTransaction";
 import ViewTransactionsOutput from "@/types/ViewTransactionsOutput";
 import { Inter } from "next/font/google";
@@ -11,7 +13,7 @@ export default function Transactions() {
   const [totalAmount, setTotalAmount] = useState(0);
   const [totalCount, setTotalCount] = useState(0);
   const [transactions, setTransactions] = useState<MarkedTransaction[]>([]);
-  const [markedCompanies, setMarkedCompanies] = useState<string[]>([]);
+  const [markedCompanies, setMarkedCompanies] = useState<MarkedCompany[]>([]);
 
   useEffect(() => {
     const viewMarkedTransactions = async () => {
@@ -25,6 +27,18 @@ export default function Transactions() {
     };
     viewMarkedTransactions();
   }, [pageIndex, markedCompanies]);
+
+  useEffect(() => {
+    const getMarkedCompanies = async () => {
+      const res = await fetch(`http://localhost:3000/api/markedCompany`, {
+        method: "GET",
+      });
+      const markedCompanies = await res.json();
+      console.log(markedCompanies);
+      setMarkedCompanies(markedCompanies);
+    };
+    getMarkedCompanies();
+  }, []);
   return (
     <main
       className={`flex min-h-screen flex-col items-center ${inter.className}`}
@@ -33,12 +47,15 @@ export default function Transactions() {
       <PaginatedTransactions
         pageIndex={pageIndex}
         setPageIndex={setPageIndex}
+        markedCompanies={markedCompanies}
         setMarkedCompanies={setMarkedCompanies}
         limit={limit}
         totalAmount={totalAmount}
         totalCount={totalCount}
         transactions={transactions}
       />
+
+      <CompanyRow markedCompanies={markedCompanies} />
     </main>
   );
 }

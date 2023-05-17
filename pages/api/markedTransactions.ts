@@ -34,10 +34,6 @@ const fetchMarkedTransactions = async (
       },
     });
 
-    transactions.forEach((transaction) => {
-      console.log(transaction.amount);
-    });
-
     const markedTransactions: MarkedTransaction[] = [];
     const markedCompanies = metadata ? metadata.markedCompanies : [];
     transactions.forEach((transaction) => {
@@ -102,15 +98,15 @@ const fetchMarkedTransactions = async (
       "Whole Foods",
       "Blue Origin",
     ];
+    const bezosRelatedAmount = newData
+      .filter((data) => defaultBezosCompanies.includes(data.merchant_name))
+      .reduce((sum, current) => (sum = sum + current.amount), 0);
     metadata = await prisma.metadata.create({
       data: {
         id: "0",
         etag: newEtag ?? "",
         markedCompanies: defaultBezosCompanies,
-        totalAmount: newData.reduce(
-          (sum, current) => (sum = sum + current.amount),
-          0
-        ),
+        totalAmount: bezosRelatedAmount,
         totalCount: newData.length,
       },
     });

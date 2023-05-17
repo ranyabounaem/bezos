@@ -1,10 +1,12 @@
+import MarkedCompany from "@/types/MarkedCompany";
 import MarkedTransaction from "@/types/MarkedTransaction";
 import { Transaction } from "@prisma/client";
 
 export interface PaginatedTransactionsProps {
   pageIndex: number;
   setPageIndex: (pageIndex: number) => void;
-  setMarkedCompanies: (markedCompanies: string[]) => void;
+  markedCompanies: MarkedCompany[];
+  setMarkedCompanies: (markedCompanies: MarkedCompany[]) => void;
   limit: number;
   totalAmount: number;
   totalCount: number;
@@ -17,6 +19,7 @@ export default function PaginatedTransactions(
   const {
     pageIndex,
     setPageIndex,
+    markedCompanies,
     setMarkedCompanies,
     limit,
     totalAmount,
@@ -26,9 +29,26 @@ export default function PaginatedTransactions(
 
   const addCompanyName = async (companyName: string) => {
     const res = await fetch(
-      `http://localhost:3000/api/addMarkedCompany?companyName=${companyName}`
+      `http://localhost:3000/api/markedCompany?companyName=${companyName}`,
+      {
+        method: "POST",
+      }
     );
-    setMarkedCompanies(await res.json());
+    setMarkedCompanies([...markedCompanies, await res.json()]);
+  };
+
+  const removeCompanyName = async (companyName: string) => {
+    const res = await fetch(
+      `http://localhost:3000/api/markedCompany?companyName=${companyName}`,
+      { method: "DELETE" }
+    );
+    if (res.status === 200) {
+      setMarkedCompanies(
+        markedCompanies.filter(
+          (markedCompany) => markedCompany.merchant_name != companyName
+        )
+      );
+    }
   };
 
   return (
@@ -36,26 +56,11 @@ export default function PaginatedTransactions(
       <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
         <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
           <tr>
-            <th scope="col" className="p-4">
-              <div className="flex items-center">
-                <input
-                  id="checkbox-all-search"
-                  type="checkbox"
-                  className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-                />
-                <label htmlFor="checkbox-all-search" className="sr-only">
-                  checkbox
-                </label>
-              </div>
-            </th>
             <th scope="col" className="px-6 py-3">
               Transaction Date
             </th>
             <th scope="col" className="px-6 py-3">
               Transaction Amount
-            </th>
-            <th scope="col" className="px-6 py-3">
-              Transaction Percentage
             </th>
             <th scope="col" className="px-6 py-3">
               Merchant Name
@@ -79,18 +84,6 @@ export default function PaginatedTransactions(
                   : "bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
               }
             >
-              <td className="w-4 p-4">
-                <div className="flex items-center">
-                  <input
-                    id="checkbox-table-search-1"
-                    type="checkbox"
-                    className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-                  />
-                  <label htmlFor="checkbox-table-search-1" className="sr-only">
-                    checkbox
-                  </label>
-                </div>
-              </td>
               <th
                 scope="row"
                 className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
@@ -98,7 +91,6 @@ export default function PaginatedTransactions(
                 {transaction.date}
               </th>
               <td className="px-6 py-4">{transaction.amount}</td>
-              <td className="px-6 py-4">{transaction.amount / totalAmount}</td>
               <td className="px-6 py-4">{transaction.merchant_name}</td>
 
               <td className="px-6 py-4">
@@ -115,7 +107,17 @@ export default function PaginatedTransactions(
                   }}
                   className="font-medium text-blue-600 dark:text-blue-500 hover:underline disabled:text-gray-700"
                 >
-                  Mark as Bezos-related
+                  {"Mark as Bezos-related"}
+                </button>
+                <br />
+                <button
+                  disabled={!transaction.marked}
+                  onClick={() => {
+                    removeCompanyName(transaction.merchant_name);
+                  }}
+                  className="font-medium text-blue-600 dark:text-blue-500 hover:underline disabled:text-gray-700"
+                >
+                  {"Unmark as Bezos-related"}
                 </button>
               </td>
             </tr>
