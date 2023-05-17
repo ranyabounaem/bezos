@@ -6,11 +6,7 @@ const getCompanyStatistics = async (
   prisma: PrismaClient,
   companyName: string
 ): Promise<MarkedCompany> => {
-  const totalAmount = await prisma.transaction.aggregate({
-    _sum: {
-      amount: true,
-    },
-  });
+  const totalAmount = (await prisma.metadata.findFirst())?.totalAmount;
   const totalCompanyAmount = await prisma.transaction.aggregate({
     _sum: {
       amount: true,
@@ -20,8 +16,7 @@ const getCompanyStatistics = async (
     },
   });
   const companyPercentage =
-    ((totalCompanyAmount._sum.amount ?? 0) / (totalAmount._sum.amount ?? 1)) *
-    100;
+    ((totalCompanyAmount._sum.amount ?? 0) / (totalAmount ?? 1)) * 100;
 
   return {
     merchant_name: companyName,

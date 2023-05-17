@@ -3,10 +3,11 @@ import PaginatedTransactions from "@/components/PaginatedTransactions";
 import MarkedCompany from "@/types/MarkedCompany";
 import MarkedTransaction from "@/types/MarkedTransaction";
 import ViewTransactionsOutput from "@/types/ViewTransactionsOutput";
-import { Inter } from "next/font/google";
+import { Inter, Poppins } from "next/font/google";
 import { useEffect, useState } from "react";
 
 const inter = Inter({ subsets: ["latin"] });
+const poppins = Poppins({ weight: "600", subsets: ["latin"] });
 export default function Transactions() {
   const [pageIndex, setPageIndex] = useState(1);
   const [limit, setLimit] = useState(20);
@@ -41,9 +42,9 @@ export default function Transactions() {
   }, []);
   return (
     <main
-      className={`flex min-h-screen flex-col items-center ${inter.className}`}
+      className={`flex min-h-screen flex-col items-center ${poppins.className}`}
     >
-      <h1 className={"text-8xl mb-10"}>{"Keeping Up With The Bezos"}</h1>
+      <h1 className={"text-4xl my-10"}>{"Keeping Up With The Bezos"}</h1>
       <PaginatedTransactions
         pageIndex={pageIndex}
         setPageIndex={setPageIndex}

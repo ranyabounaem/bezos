@@ -53,7 +53,7 @@ export default function PaginatedTransactions(
 
   return (
     <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
-      <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+      <table className="w-full text-sm text-center text-gray-500 dark:text-gray-400">
         <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
           <tr>
             <th scope="col" className="px-6 py-3">
@@ -80,7 +80,7 @@ export default function PaginatedTransactions(
               key={index}
               className={
                 transaction.marked
-                  ? "bg-white border-b dark:bg-red-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
+                  ? "bg-white border-b dark:bg-[#ff9900] dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
                   : "bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
               }
             >
@@ -101,16 +101,23 @@ export default function PaginatedTransactions(
 
               <td className="px-6 py-4">
                 <button
-                  disabled={transaction.marked}
                   onClick={() => {
-                    addCompanyName(transaction.merchant_name);
+                    if (!transaction.marked) {
+                      addCompanyName(transaction.merchant_name);
+                    } else {
+                      removeCompanyName(transaction.merchant_name);
+                    }
                   }}
-                  className="font-medium text-blue-600 dark:text-blue-500 hover:underline disabled:text-gray-700"
+                  className={`font-medium ${
+                    transaction.marked ? "text-blue-900" : "text-red-900"
+                  } hover:underline `}
                 >
-                  {"Mark as Bezos-related"}
+                  {transaction.marked
+                    ? "Unmark as Bezos-related"
+                    : "Mark as Bezos-related"}
                 </button>
                 <br />
-                <button
+                {/* <button
                   disabled={!transaction.marked}
                   onClick={() => {
                     removeCompanyName(transaction.merchant_name);
@@ -118,7 +125,7 @@ export default function PaginatedTransactions(
                   className="font-medium text-blue-600 dark:text-blue-500 hover:underline disabled:text-gray-700"
                 >
                   {"Unmark as Bezos-related"}
-                </button>
+                </button> */}
               </td>
             </tr>
           ))}
